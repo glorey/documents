@@ -231,8 +231,16 @@ $ python test_pyext.py
 ![sum=1](http://www.forkosh.com/mathtex.cgi?\\sum_{y}p%28y|x%29=1)。
 
 &emsp;&emsp;最大熵模型用布尔函数来特征函数。称之为上下文谓词，如以下格式。
+
 ![feat_func] &emsp;&emsp;(3.2)
 
+&emsp;&emsp;此处cp是上下文谓词，它将一个上下文x和输出y组成的pair映射到布尔变量{true, false}。
+
+&emsp;&emsp;我们可以选择任意的特征，来尽可能真实地反映问题的特性。
+可以自由的组合不同的任务相关知识作为特征函数，使得最大熵模型相对于其他的统计模型有明显优势。
+他们很多都需要强烈的特征独立假设（例如naive bayes分类器）。
+
+&emsp;&emsp;例如，词性标注任务，是一个对句子中的词进行添加词性标签的过程，下面的特征可能是非常有用：
 
 
 
