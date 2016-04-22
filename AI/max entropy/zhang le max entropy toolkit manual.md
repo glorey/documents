@@ -228,7 +228,10 @@ $ python test_pyext.py
 
 &emsp;&emsp;这里![p_y_x]表示给定上下文![x]的前提下，预测输出![y]的概率。![f_i_x_y] 是特征函数。![lambda_i]是特征函数的权重。
 ![k]是特征的个数，![Z_x]是归一化因子，来确保
+![sum=1](http://www.forkosh.com/mathtex.cgi?\\sum_{y}p%28y|x%29=1)。
 
+&emsp;&emsp;最大熵模型用布尔函数来特征函数。称之为上下文谓词，如以下格式。
+![feat_func] &emsp;&emsp;(3.2)
 
 
 
@@ -249,3 +252,4 @@ $ python test_pyext.py
 [p_y_x]:http://www.forkosh.com/mathtex.cgi?p(y|x)
 [f_i_x_y]:http://www.forkosh.com/mathtex.cgi?f_i(x,y)
 [lambda_i]:http://www.forkosh.com/mathtex.cgi?\\lambda_i
+[feat_func]:http://www.forkosh.com/mathtex.cgi?f_{cp,y'}(x,y)=\\begin{cases}1&\\quad\\text{if%20}y=y'\\text{%20and%20}cp(x)=true\\\\0&\\quad\\text{otherwise}\\\\\\end{cases}
