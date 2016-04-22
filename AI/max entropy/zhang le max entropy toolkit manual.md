@@ -217,7 +217,9 @@ $ python test_pyext.py
 
 ### 3.1 模型问题
 &emsp;&emsp;统计模型的目标是，建立一个最符合训练数据的模型。
-更具体来说，给定一个经验概率分布
+更具体来说，给定一个经验概率分布![\tilde{p}](http://www.forkosh.com/mathtex.cgi?\\tilde{p})，
+我们希望构建一个模型![p](http://www.forkosh.com/mathtex.cgi?p)，
+和经验分布![\tilde{p}](http://www.forkosh.com/mathtex.cgi?\\tilde{p})尽量接近。
 
 
 
