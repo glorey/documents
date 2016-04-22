@@ -224,8 +224,10 @@ $ python test_pyext.py
 &emsp;&emsp;当然给定一个训练数据集合，有很多中方法找到模型![p]符合于训练数据。
 可以看到公式3.1是给定一些特征限制前提下，在KL距离的尺度最接近于![tilde{p}]的模型。
 
-![form3.1](http://www.forkosh.com/mathtex.cgi?p%28y|x%29=\\frac{1}{Z%28x%29}exp\\left[\\displaystyle\\sum_{i=1}^{k} \\lambda_i f_i%28x,y%29\\right])
+![form3.1](http://www.forkosh.com/mathtex.cgi?p%28y|x%29=\\frac{1}{Z%28x%29}exp\\left[\\displaystyle\\sum_{i=1}^{k} \\lambda_i f_i%28x,y%29\\right])&emsp;&emsp;(3.1)
 
+&emsp;&emsp;这里![p_y_x]表示给定上下文![x]的前提下，预测输出![y]的概率。![f_i_x_y] 是特征函数。![lambda_i]是特征函数的权重。
+![k]是特征的个数，![Z_x]是归一化因子，来确保
 
 
 
@@ -238,6 +240,12 @@ $ python test_pyext.py
 
 
 &emsp;&emsp;
-
+[x]:http://www.forkosh.com/mathtex.cgi?x
+[y]:http://www.forkosh.com/mathtex.cgi?y
+[k]:http://www.forkosh.com/mathtex.cgi?k
 [p]:http://www.forkosh.com/mathtex.cgi?p
+[Z_x]:http://www.forkosh.com/mathtex.cgi?Z(x)
 [tilde{p}]:http://www.forkosh.com/mathtex.cgi?\\tilde{p}
+[p_y_x]:http://www.forkosh.com/mathtex.cgi?p(y|x)
+[f_i_x_y]:http://www.forkosh.com/mathtex.cgi?f_i(x,y)
+[lambda_i]:http://www.forkosh.com/mathtex.cgi?\\lambda_i
