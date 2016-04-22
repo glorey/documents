@@ -217,9 +217,14 @@ $ python test_pyext.py
 
 ### 3.1 模型问题
 &emsp;&emsp;统计模型的目标是，建立一个最符合训练数据的模型。
-更具体来说，给定一个经验概率分布![\tilde{p}](http://www.forkosh.com/mathtex.cgi?\\tilde{p})，
-我们希望构建一个模型![p](http://www.forkosh.com/mathtex.cgi?p)，
-和经验分布![\tilde{p}](http://www.forkosh.com/mathtex.cgi?\\tilde{p})尽量接近。
+更具体来说，给定一个经验概率分布![tilde{p}]，
+我们希望构建一个模型![p]，
+和经验分布![tilde{p}]尽量接近。
+
+&emsp;&emsp;当然给定一个训练数据集合，有很多中方法找到模型![p]符合于训练数据。
+可以看到公式3.1是给定一些特征限制前提下，在KL距离的尺度最接近于![tilde{p}]的模型。
+
+![form3.1](http://www.forkosh.com/mathtex.cgi?p%28y|x%29=\\frac{1}{Z%28x%29}exp\\left[\\displaystyle\\sum_{i=1}^{k} \\lambda_i f_i%28x,y%29\\right])
 
 
 
@@ -233,3 +238,6 @@ $ python test_pyext.py
 
 
 &emsp;&emsp;
+
+[p]:http://www.forkosh.com/mathtex.cgi?p
+[tilde{p}]:http://www.forkosh.com/mathtex.cgi?\\tilde{p}
