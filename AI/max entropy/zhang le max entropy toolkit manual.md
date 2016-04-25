@@ -234,10 +234,11 @@ $k$是特征的个数，$Z_x$是归一化因子，来确保$\sum_{y}p(y|x)=1$。
 &emsp;&emsp;最大熵模型用布尔函数来特征函数。称之为上下文谓词，如以下格式。
 
 &emsp;&emsp;公式3.2
+
 $$
 f_{cp,y'}(x,y)=
 \begin{cases}
-1& \quad \text{if } y=y' \text{ and } cp(x)=true \\
+1& \quad \text{if } y=y' \text{ and } cp(x)=true\\
 0& \quad \text{otherwise}\\
 \end{cases}
 $$
@@ -259,13 +260,4 @@ $$
 
 
 &emsp;&emsp;
-[x]:http://www.forkosh.com/mathtex.cgi?x
-[y]:http://www.forkosh.com/mathtex.cgi?y
-[k]:http://www.forkosh.com/mathtex.cgi?k
-[p]:http://www.forkosh.com/mathtex.cgi?p
-[Z_x]:http://www.forkosh.com/mathtex.cgi?Z(x)
-[tilde{p}]:http://www.forkosh.com/mathtex.cgi?\\tilde{p}
-[p_y_x]:http://www.forkosh.com/mathtex.cgi?p(y|x)
-[f_i_x_y]:http://www.forkosh.com/mathtex.cgi?f_i(x,y)
-[lambda_i]:http://www.forkosh.com/mathtex.cgi?\\lambda_i
-[feat_func]:http://www.forkosh.com/mathtex.cgi?f_{cp,y'}(x,y)=\\begin{cases}1&\\quad\\text{if%20}y=y'\\text{%20and%20}cp(x)=true\\\\0&\\quad\\text{otherwise}\\\\\\end{cases}
+
