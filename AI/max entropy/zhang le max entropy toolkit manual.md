@@ -222,12 +222,14 @@ $ python test_pyext.py
 
 &emsp;&emsp;当然给定一个训练数据集合，有很多中方法找到模型$p$符合于训练数据。
 可以看到公式3.1是给定一些特征限制前提下，在KL距离的尺度最接近于$\tilde{p}$的模型。
+
+&emsp;&emsp;公式3.1
 $$
-p(y|x)=\frac{1}{Z(x)}exp\left[\displaystyle\sum_{i=1}^{k} \lambda_i f_i(x,y)\\right])
+p(y|x)=\frac{1}{Z(x)}exp\left[\displaystyle\sum_{i=1}^{k} \lambda_i f_i(x,y)\\right]
 $$
-&emsp;&emsp;这里![p_y_x]表示给定上下文![x]的前提下，预测输出![y]的概率。![f_i_x_y] 是特征函数。![lambda_i]是特征函数的权重。
-![k]是特征的个数，![Z_x]是归一化因子，来确保
-![sum=1](http://www.forkosh.com/mathtex.cgi?\\sum_{y}p%28y|x%29=1)。
+
+&emsp;&emsp;这里$p(y|x)$表示给定上下文$(x)的前提下，预测输出$(y)的概率。$f_i(x,y)$是特征函数。$\lambda_i$是特征函数的权重。
+$k$是特征的个数，$Z_x$是归一化因子，来确保$\sum{y}p(y|x)=1$
 
 &emsp;&emsp;最大熵模型用布尔函数来特征函数。称之为上下文谓词，如以下格式。
 
