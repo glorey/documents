@@ -233,7 +233,14 @@ $k$是特征的个数，$Z_x$是归一化因子，来确保$\sum_{y}p(y|x)=1$。
 
 &emsp;&emsp;最大熵模型用布尔函数来特征函数。称之为上下文谓词，如以下格式。
 
-![feat_func] &emsp;&emsp;(3.2)
+&emsp;&emsp;公式3.2
+$$
+f_{cp,y'}(x,y)=
+\begin{cases}
+1& \quad \text{if } y=y' \text{ and } cp(x)=true \\
+0& \quad \text{otherwise}\\
+\end{cases}
+$$
 
 &emsp;&emsp;此处cp是上下文谓词，它将一个上下文x和输出y组成的pair映射到布尔变量{true, false}。
 
