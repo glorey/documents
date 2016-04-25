@@ -229,7 +229,7 @@ p(y|x)=\frac{1}{Z(x)}exp\left[\displaystyle\sum_{i=1}^{k} \lambda_i f_i(x,y)\\ri
 $$
 
 &emsp;&emsp;这里$p(y|x)$表示给定上下文$(x)的前提下，预测输出$(y)的概率。$f_i(x,y)$是特征函数。$\lambda_i$是特征函数的权重。
-$k$是特征的个数，$Z_x$是归一化因子，来确保$\sum{y}p(y|x)=1$
+$k$是特征的个数，$Z_x$是归一化因子，来确保$\sum_{y}p(y|x)=1$。
 
 &emsp;&emsp;最大熵模型用布尔函数来特征函数。称之为上下文谓词，如以下格式。
 
