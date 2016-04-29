@@ -254,8 +254,8 @@ $$
 $$
 f_{previous\_tag\_is\_DETEMINER,NOUN}(x,y)=
 \begin{cases}
-1& \quad \text{if } y=NOUN \text{ and previous tag is } DETERMINER(x)=true\\
-0& \quad \text{otherwise}\\
+1& \quad \text{if } y=NOUN \text{ and previous tag is } DETERMINER(x)=true\\\\
+0& \quad \text{otherwise}\\\\
 \end{cases}
 $$
 
