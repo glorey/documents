@@ -238,8 +238,8 @@ $k$是特征的个数，$Z_x$是归一化因子，来确保$\sum_{y}p(y|x)=1$。
 $$
 f_{cp,y'}(x,y)=
 \begin{cases}
-1& \quad \text{if } y=y' \text{ and } cp(x)=true\\
-0& \quad \text{otherwise}\\
+1& \quad \text{if } y=y' \text{ and } cp(x)=true\\\\
+0& \quad \text{otherwise}\\\\
 \end{cases}
 $$
 
