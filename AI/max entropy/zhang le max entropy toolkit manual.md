@@ -265,10 +265,10 @@ $$
 
 $$
 f_{document\\_has\\_ROMANTIC, love\\_story(x,y)=
-\begin{case}
+\begin{cases}
 1& \quad \text{if } y=love\\_story \text{ and } document\\_contains\\_ROMANTIC(x)=true\\\\
 0& \quad \text{otherwise}\\\\
-\end{case}
+\end{cases}
 $$
 
 
