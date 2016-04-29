@@ -264,7 +264,7 @@ $$
 &emsp;&emsp;在文本分类任务中，一个特征可能如下所示
 
 $$
-f_{document\\_has\\_ROMANTIC, love\\_story(x,y)=
+f_{document\\_has\\_ROMANTIC, love\\_story}(x,y)=
 \begin{cases}
 1& \quad \text{if } y=love\\_story \text{ and } document\\_contains\\_ROMANTIC(x)=true\\\\
 0& \quad \text{otherwise}\\\\
