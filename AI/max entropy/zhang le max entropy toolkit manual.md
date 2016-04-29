@@ -271,9 +271,26 @@ f_{document\\_has\\_ROMANTIC, love\\_story}(x,y)=
 \end{cases}
 $$
 
+&emsp;&emsp;当文档中包含ROMANTIC词，同时文本分类为标记是love_story时，
+特征激活。
+
+&emsp;&emsp;一旦特征选定之后，我们可以通过增加特征限制，来构建最大熵模型。从格式上来讲，我们需要
+
+$$
+E_{\\tilde{p}}<f_i>=E_{p}<f_i>
+$$
+
+&emsp;&emsp;在此处$E_{\tidle{p}}<f_i>=\sum_{x}\tilde{p}(x,y)f_i(x,y)$是特征
+$f_i(x,y)$在训练数据中的经验期望。
+$E_{p}<f_i>=\sum{x}p(x,y)f_i(x,y)$是特征在模型分布为$p$的
+情况下的模型期望。在所有满足此限制条件的前提下，
+熵最大的模型我们称之为最大熵模型。
+
+
+
+
 
 
 
 
 &emsp;&emsp;
-
