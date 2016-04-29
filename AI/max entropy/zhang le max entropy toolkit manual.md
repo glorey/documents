@@ -259,7 +259,17 @@ f_{previous\\_tag\\_is\\_DETEMINER,NOUN}(x,y)=
 \end{cases}
 $$
 
+&emsp;&emsp;当先一个词性是DETERMINER当前词性是NOUN时，特征激活。
 
+&emsp;&emsp;在文本分类任务中，一个特征可能如下所示
+
+$$
+f_{document\\_has\\_ROMANTIC, love\\_story(x,y)=
+\begin{case}
+1& \quad \text{if } y=love\\_story \text{ and } document\\_contains\\_ROMANTIC(x)=true\\\\
+0& \quad \text{otherwise}\\\\
+\end{case}
+$$
 
 
 
