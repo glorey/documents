@@ -252,7 +252,7 @@ $$
 &emsp;&emsp;例如，词性标注任务，是一个对句子中的词进行添加词性标签的过程，下面的特征可能是非常有用：
 
 $$
-f_{previous\_tag\_is\_DETEMINER,NOUN}(x,y)=
+f_{previous\\_tag\\_is\\_DETEMINER,NOUN}(x,y)=
 \begin{cases}
 1& \quad \text{if } y=NOUN \text{ and previous tag is } DETERMINER(x)=true\\\\
 0& \quad \text{otherwise}\\\\
