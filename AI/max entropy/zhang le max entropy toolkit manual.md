@@ -291,7 +291,7 @@ $E_{p}<f_i>=\sum_{x}p(x,y)f_i(x,y)$是特征在模型分布为$p$的
 使得最大化对数似然概率。
 公式3.3
 $$
-L(p)=\sum_(x,y)\tilde{p}(x,y)log p(y|x)
+L(p)=\sum_{x,y}\tilde{p}(x,y)\log p(y|x)
 $$
 
 
