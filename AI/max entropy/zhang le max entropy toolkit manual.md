@@ -289,14 +289,28 @@ $E_{p}<f_i>=\sum_{x}p(x,y)f_i(x,y)$是特征在模型分布为$p$的
 ### 3.2 参数估计
 &emsp;&emsp;给定一个包含n个特征的指数模型，以及一个训练数据集合（经验分布），我们需要为n个特征中的每一个找到一个相关的实数权重，
 使得最大化对数似然概率。
-公式3.3
+
+&emsp;&emsp;公式3.3
 $$
 L(p)=\sum_{x,y}\tilde{p}(x,y)\log p(y|x)
 $$
 
+&emsp;&emsp;从一个给定的指数模型中找到最优模型不是一个简单的工作。对于最大熵模型来说通常有两种方法来优化公式3.3。
+GIS(Generalized Iterative Scaling)[Darroch and Ratcliff, 1972]和IIS(Improved Iterative Scaling)[Della Pietra 1997]
 
+&emsp;&emsp;最近，大家发现一个通用的优化算法LBFGS对于最大熵的参数估计非常有效。LBFGS是被工具包的默认参数估计方法。
 
+### 3.3 深入阅读
 
+&emsp;&emsp;本小节列举了一些推荐的论文，读者可以后续进行深入阅读。
+* Maximum Entorpy Approach to Natural Language Porcessing [Berger et al., 1996]
+
+&emsp;&emsp;在自然语言处理中应用最大熵技术的必读文章，这篇文章详细介绍了最大熵模型，同时提供了一些特征选择算法，
+来逐渐构建最大熵模型，并将其应用在统计机器翻译中。
+* Inducing Features of Random Fields [Della Pietra et al., 1997]
+[Darroch and Ratcliff, 1972] 
+
+[Della Pietra 1997]
 
 
 &emsp;&emsp;
