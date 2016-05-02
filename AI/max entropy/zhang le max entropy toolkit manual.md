@@ -308,9 +308,36 @@ GIS(Generalized Iterative Scaling)[Darroch and Ratcliff, 1972]和IIS(Improved It
 &emsp;&emsp;在自然语言处理中应用最大熵技术的必读文章，这篇文章详细介绍了最大熵模型，同时提供了一些特征选择算法，
 来逐渐构建最大熵模型，并将其应用在统计机器翻译中。
 * Inducing Features of Random Fields [Della Pietra et al., 1997]
-[Darroch and Ratcliff, 1972] 
+[Darroch and Ratcliff, 1972]
 
-[Della Pietra 1997]
+&emsp;&emsp;另外一篇最大熵模型的必读文章。它来处理更通用的框架，随机场。同时提出了IIS算法来估计随机场的参数。这篇文章给出了随机场的理论背景（然后最大熵模型）。给出了一个从一个原子特征集合中自动构建详细的随机场的贪心Field Induction方法。并开发了一个英文word mophology应用。
+
+* Adaptive Statistical Language Modeling: A Maximum Entropy Approach [Rosenfeld, 1996]
+
+&emsp;&emsp;这篇论文将最大熵技术引入到统计语言模型任务。在论文中构建了一个融合传统ngram，长距离Ngram以及trigger对特征的最大熵模型。在基线ngram基础上PPL有了很大的降低。后来，Rosenfeld和他的团队提出了Whole Sentence Exponential Model，来解决最大熵模型的计算量瓶颈。
+
+* Maximum Entropy Models For Natural Language Ambiguity Resolution [Ratnaparkhi, 1998]
+
+&emsp;&emsp;这篇论文详细讨论了最大熵模型在多种自然语言消岐中的应用。
+在最大熵框架下可以解决许多问题，句边界检测，词性标注，浅层parsing和
+文本分类。同时给出了同其他的机器学习技术（Naive Bayes，Transform based learning， 决策树）的比较。
+
+* The Improved Iterative Scaling Algorithm: A Gentle Introduction [Berger, 1997]
+
+&emsp;&emsp;这篇论文详细介绍了IIS算法，这里的介绍比[Della Pietra et al., 1997]更加容易理解。这里引入了更多的数学符号。
+
+* Stochastic Attribute-Value Grammars [Abney, 1997]
+
+&emsp;&emsp;Abney将IIS算法引入到属性-值grammar的参数估计中。它不能够通过ERF方法来正确技术（虽然它能够在PCFG下工作）。
+
+* A comparison of algorithms for maximum entropy parameter estimation [Malouf, 2003]
+
+&emsp;&emsp;在多个NLP任务上比较了四种参数估计算法，LBFGS的效率最高。
+比IIS和GIS算法都要好。[Wallach, 2002]在CRF模型参数估计中报告了类似的结果。
+
+
+
+
 
 
 &emsp;&emsp;
