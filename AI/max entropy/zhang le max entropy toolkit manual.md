@@ -603,23 +603,66 @@ result = m.eval_all(context)
 
 ### 4.6 Case Study: 构建一个最大熵词性标注工具
 
-&emsp;&emsp;本小节详细讨论构建一个英文词性标注的步骤。
+&emsp;&emsp;本小节详细讨论构建一个英文词性标注的步骤。严格实现了[Ratnaparkhi, 1998]论文中描述的词性标注器。
+本小节使用python语言，用华尔街日报预料00-18小节进行训练，19-24小节进行测试，最终的标注器得到的准确率超过96%。
 
+#### 4.6.1 标注模型
+&emsp;&emsp;词性标注任务是对一个词序列（通常是句子）设置正确的词性标记。下面的表格列出了一个词序列和它对应的
+词性（截取自[Ratnaparkhi, 1998]）。
 
+| word:   | the | stories | about | well-heeled | communities | and | developers|
+|---------|-----|--------|--------|-------------|-------------|-----|---|
+| tag:    | DT  |  NNS   |  IN    |     JJ      |       NNS   |  CC | NNS|
+| position: | 1   |  2   |    3   |     4       |   5        |  6 |  7 |
 
+&emsp;&emsp;为了用最大熵模型来解决此问题，我们可以构建一个条件模型，
+在给定上下文$x$时，来计算一个标签$y$的概率。
 
+$$
+p(y|x)=\frac{1}{Z(x)}\exp\left[\displaystyle\sum_{i=1}^{k}\lambda_{i}f_{i}(x,y)\right]
+$$
 
+&emsp;&emsp;因此给定句子${w_1, w_2,...,w_n}之后，词性{t_1, t_2,...,t_n}的概率可以表示为
+每个$p(y|x)$的乘积，假定每个词性标签$y$仅依赖于有限的上下文信息$x$：
 
+$$
+p(t_1,t_2,...,t_n|w_1,w_2,...,w_n) \approx \prod_{i=1}^{n}p(y_i|x_i)
+$$
 
+&emsp;&emsp;给定句子${w_1,w_2,...,w_n}$，我们可以生成K个到目前为止最高概率的候选标注序列，
+最终选取得分最高的候选作为我们的标注结果。
 
+#### 4.6.2 特征选择
+&emsp;&emsp;按照[Ratnaparkhi, 1998]，我们使用特征模板集合来选取特征，用来训练词性标注模型。
 
+|curword=yeas|
+|-----------|
+|tag-1=CD|
+|word-2=,|
+|tag-1,2=„CD|
+|word+1=old|
+|curword=old|
+|word-1=years|
+|tag-1=NNS|
+|tag-1,2=CD,NNS|
+|word+2=will|
+|word-1=old|
+|prefix=E|
+|prefix=El|
+|suffix=r|
+|suffix=er|
+|suffix=ier|
 
+&emsp;&emsp;请注意，如果一个词不太常见（在训练数据中低于5次），
+会使用一些额外的特征，基于词的形式，来帮助预测词性，下述特征可能会有用。
 
-
-
-
-
-
+$$
+f(x,y)=
+\begin{cases}
+1& \quad \text{if } y=VBG \text{ and } current\_suffix\_is_\ing(x)=true\\\\
+0& \quad \text{otherwise}\\\\
+\end{cases}
+$$
 
 
 
