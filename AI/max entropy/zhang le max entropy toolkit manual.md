@@ -850,29 +850,227 @@ options:
 -TTYPE, --type=TYPE choose context type
 ```
 
-&emsp;&emsp;标注就诶过会打印到屏幕上，每个句子一行。
+&emsp;&emsp;标注结果会打印到屏幕上，每个句子一行。
 
 
+## 第五章 命令行模块
 
+### 5.1 maxent程序
+&emsp;&emsp;为了方便，本工具包提供了一个运行程序maxent，来完成一些常见的操作，
+比如从数据文件中构建最大熵模型，对于未见到的数据预测标记，以及进行N-fold交叉验证。
+源码```src/maxent.cpp```同样也演示了C++接口的使用方式。
 
+### 5.2 数据格式
+&emsp;&emsp;maxent使用的数据格式和其他的分类器类似。
 
+```
+(BNF-like representation)
+<event> .=. <label> <feature>[:<fvalue>] <feature>[:<fvalue>] ...
+<feature> .=. string
+<fvalue> .=. float (must be non-negative)
+<label> .=. string
+<line> .=. <event>
+```
 
+&emsp;&emsp;label和feature都被看作字符床，如果一个feature包含一个":"以及一个浮点型的数值（必须为非负），
+这个数值可以被看作特征值，否则特征值被设置为1（binary特征）。
 
+&emsp;&emsp;**重要:** 你必须要么全部取消特征值，或者都保留特征值。不能在一个特征文件中一部分特征包含特征值，一部分不包含特征值。
+下面是一些示例的特征文件。
 
+```
+Outdoor Sunny Happy
+Outdoor Sunny Happy Dry
+Outdoor Sunny Happy Humid
+Outdoor Sunny Sad Dry
+Indoor Rainy Happy Humid
+Indoor Rainy Happy Dry
+Indoor Rainy Sad Dry
+. . .
+```
 
+&emsp;&emsp;这里```Outdoor```和```Indoor```是输出标记，其他的字符串是特征(context Predicates)。
 
+&emsp;&emsp;如果出现数值特征，可以认为他们是特征值（必须为非负），格式与其他的分类器格式兼容，例如libsvm或者svm-light。
+例如，下面的数据是从libsvm中文本分类任务中抽取的：
 
+```
++1 4:1.0 6:2 9:7 14:1 20:12 25:1 27:0.37 31:1
++1 4:8 6:91 14:1 20:1 29:1 30:13 31:1 39:1
++1 6:1 9:7 14:1 20:111 24:1 25:1 28:1 29:0.21
+-1 6:6 9:1 14:1 23:1 35:1 39:1 46:1 49:1
+-1 6:1 49:1 53:1 55:1 80:1 86:1 102:1
+```
 
+### 5.3 示例
+&emsp;&emsp;假定我们有训练数据train.txt和测试数据test.txt。下面的命令行是maxent的常见使用方式。
 
+&emsp;&emsp;创建最大熵模型model1，输入训练数据train.txt，迭代30次，训练算法采用LBFGS（默认）
 
+```
+maxent train.txt -m model1 -i 30
+```
 
+&emsp;&emsp;如果添加```-b```标志，模型会以二进制格式存储，这样在保存和加载时比纯文本格式会快很多。
+在加载时，程序会自动检测模型的格式，不需要添加```-b```标记。如果本程序库编译过程中包含```zlib```库，
+二进制模型会以gzip压缩格式存储，这样会节省很多硬盘空间。
 
+```
+save a binary model:
+maxent train.txt -b -m model1 -i 30
+then predict new samples with the newly created model:
+maxent -p test.txt -m model1
+```
 
+&emsp;&emsp;默认情况下，如果mmap可用的话，maxent会尝试通过```mmap()```来读取数据，
+如果这样会ui引发问题，```--nonmmap```选项可以用来让```mmap()```失效，
+同时采用标准输入输出，但是这样会慢一些。
 
+&emsp;&emsp;有时候我们仅仅希望测试一下一个模型训练之后的效果，这样训练、预测过程可以融合在一起，
+不需要显示得存储和加载模型文件
 
+```
+maxent train.txt test.txt
+```
 
+&emsp;&emsp;在```train.txt```上运行10份交叉验证，同时汇报准确率：
 
+```
+maxent -n 10 train.txt
+```
 
+&emsp;&emsp;如果-v选项打开，训练产生的日志会打印到标准输出流
 
+```
+maxent train.txt -m model1 -v
+Total 180 training events added
+Total 0 heldout events added
+Reducing events (cutoff is 1)...
+Reduced to 177 training events
+Starting L-BFGS iterations...
+Number of Predicates: 9757
+Number of Outcomes: 2
+Number of Parameters: 11883
+Number of Corrections: 5
+Tolerance: 1.000000E-05
+Gaussian Penalty: off
+Optimized version
+iter eval loglikelihood training accuracy heldout accuracy
+==================================================================
+0 1-6.931472E-01 38.889% N/A
+1 2-2.440559E-01 86.111% N/A
+2 3-1.358731E-01 98.333% N/A
+3 4-1.058029E-01 98.889% N/A
+4 5-5.949606E-02 99.444% N/A
+5 6-3.263124E-02 100.000% N/A
+6 7-1.506045E-02 100.000% N/A
+7 8-7.390649E-03 100.000% N/A
+8 9-3.623262E-03 100.000% N/A
+9 10-1.661110E-03 100.000% N/A
+10 11-6.882981E-04 100.000% N/A
+11 12-4.081801E-04 100.000% N/A
+12 13-1.907085E-04 100.000% N/A
+13 14-9.775213E-05 100.000% N/A
+14 15-4.831358E-05 100.000% N/A
+15 16-2.423319E-05 100.000% N/A
+16 17-1.666308E-05 100.000% N/A
+17 18-5.449101E-06 100.000% N/A
+18 19-3.448578E-06 100.000% N/A
+19 20-1.600556E-06 100.000% N/A
+20 21-8.334602E-07 100.000% N/A
+21 22-4.137602E-07 100.000% N/A
+Training terminats succesfully in 1.3125 seconds
+Highest log-likelihood: -2.068951E-07
+```
 
-&emsp;&emsp;
+&emsp;&emsp;使用模型```model1```来预测数据```test.txt```，并将预测结果存储到```output.txt```中。
+仅保存最高得分的标记，每个标记一行：
+```
+maxent -p -m model1 -o output.txt test.txt
+```
+
+&emsp;&emsp;当设置```-detail```标记后，完整的分布会被输出出来。
+
+```
+<outcome1> <prob1> <outcome2> <prob2> ...
+maxent -p -m model1 --detail -o output.txt test.txt
+```
+
+&emsp;&emsp;可以通过设定heldout数据来监控训练过程中每次迭代之后的性能，
+当在heldout数据上出现准确率降低时，可能预示着出现了一些过拟合。
+
+```
+maxent -m model1 train.txt --heldout heldout.txt -v
+Loading training events from train.txt
+.
+Loading heldout events from heldout.txt
+Total 1000 training events added
+Total 99 heldout events added
+Reducing events (cutoff is 1)...
+Reduced to 985 training events
+Reduced to 99 heldout events
+Starting L-BFGS iterations...
+Number of Predicates: 24999
+Number of Outcomes: 2
+Number of Parameters: 30304
+Number of Corrections: 5
+Tolerance: 1.000000E-05
+Gaussian Penalty: off
+Optimized version
+iter eval loglikelihood training accuracy heldout accuracy
+==================================================================
+0 1-6.931472E-01 43.300% 48.485%
+1 2-3.821936E-01 74.400% 71.717%
+2 3-1.723962E-01 95.600% 95.960%
+3 4-1.465401E-01 97.100% 97.980%
+4 5-1.196789E-01 97.600% 97.980%
+5 6-9.371452E-02 97.800% 97.980%
+6 7-6.035709E-02 98.700% 97.980%
+7 8-3.297382E-02 99.700% 98.990%
+8 9-1.777857E-02 99.800% 98.990%
+9 10-9.939370E-03 99.900% 100.000%
+9 10-8.610207E-02 95.900% 94.949%
+10 12-8.881104E-03 99.900% 98.990%
+11 13-4.874563E-03 99.900% 98.990%
+12 14-2.780725E-03 99.900% 98.990%
+13 15-1.139578E-03 100.000% 98.990%
+14 16-5.539811E-04 100.000% 98.990%
+15 17-2.344039E-04 100.000% 98.990%
+16 18-1.371225E-04 100.000% 98.990%
+Training terminats succesfully in 8.5625 seconds
+Highest log-likelihood: -9.583916E-08
+```
+
+&emsp;&emsp;在此示例中，在第九轮得到了一个最优结果。后续的训练实际上降低了在heldout数据上的准确率。
+虽然在训练数据上其准确率持续上升。通过引入高斯先验可以帮助避免过拟合，通过使用```-g float```来设置
+全局的高斯方差$\sigma^2$。
+
+&emsp;&emsp;最后可以通过```-h```选项来查看帮助信息。
+
+```
+maxent -h
+Purpose:
+A command line utility to train (test) a maxent model from a file.
+Usage: maxent [OPTIONS]... [FILES]...
+  -h           --help           Print help and exit
+  -V           --version        Print version and exit
+  -v           --verbose        verbose mode (default=off)
+  -mSTRING     --model=STRING   set model filename
+  -b           --binary         save model in binary format (default=off)
+  -oSTRING     --output=STRING  prediction output filename
+               --detail output  full distribution in prediction mode (default=off)
+  -iINT        --iter=INT       iterations for training algorithm (default=’30’)
+  -gFLOAT      --gaussian=FLOAT set Gaussian prior, disable if 0 (default=’0.0’)
+  -cINT        --cutoff=INT     set event cutoff (default=’1’)
+               --heldout=STRING specify heldout data for training
+  -r           --random         randomizing data in cross validation (default=off)
+               --nommap         do not use mmap() to read data (slow) (default=off)
+
+  Group: MODE
+  -p          --predict         prediction mode, default is training mode
+  -nINT       --cv=INT          N-fold cross-validation mode (default=’0’)
+
+  Group: Parameter Estimate Method
+              --lbfgs           use L-BFGS parameter estimation (default)
+              --gis             use GIS parameter estimation
+```
