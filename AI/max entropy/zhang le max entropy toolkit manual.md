@@ -635,6 +635,22 @@ $$
 #### 4.6.2 特征选择
 &emsp;&emsp;按照[Ratnaparkhi, 1998]，我们使用特征模板集合来选取特征，用来训练词性标注模型。
 
+
+
+&emsp;&emsp;请注意，如果一个词不太常见（在训练数据中低于5次），
+会使用一些额外的特征，基于词的形式，来帮助预测词性，下述特征可能会有用。
+
+$$
+f(x,y)=
+\begin{cases}
+1& \quad \text{if } y=VBG \text{ and current suffix is ing}(x)=true\\\\
+0& \quad \text{otherwise}\\\\
+\end{cases}
+$$
+
+&emsp;&emsp;可以用一个字符串来表示"suffix=ing_VBG"。下面是从训练数据（WSJ语料）中
+收集的部分特征。
+
 |curword=yeas|
 |-----------|
 |tag-1=CD|
@@ -653,16 +669,190 @@ $$
 |suffix=er|
 |suffix=ier|
 
-&emsp;&emsp;请注意，如果一个词不太常见（在训练数据中低于5次），
-会使用一些额外的特征，基于词的形式，来帮助预测词性，下述特征可能会有用。
+&emsp;&emsp;仅列取了出现10次以上的特征。根据定义，出现5次以下的为不常见词。
 
-$$
-f(x,y)=
-\begin{cases}
-1& \quad \text{if } y=VBG \text{ and current suffix is ing}(x)=true\\\\
-0& \quad \text{otherwise}\\\\
-\end{cases}
-$$
+#### 4.6.3 训练模型
+&emsp;&emsp;一旦选定特征，使用本工具包训练最大熵模型是非常简单的。
+首先，创建实例，然后增加事件。
+
+```python
+from maxent import MaxentModel
+m = MaxentModel()
+m.begin_add_event()
+m.add_event("suffix=ing", "VBG", 1)
+...
+m.end_add_event()
+```
+
+&emsp;&emsp;然后调用LBFGS训练流程，迭代100次训练最大熵模型。
+
+```python
+m.train(100, "lbfgs")
+```
+
+训练输出如下：
+```
+Total 125997 training events added
+Total 0 heldout events added
+Reducing events (cutoff is 1)...
+Reduced to 65232 training events
+Starting L-BFGS iterations...
+Number of Predicates: 5827
+Number of Outcomes: 34
+Number of Parameters: 8202
+Number of Corrections: 5
+Tolerance: 1.000000E-05
+Gaussian Penalty: on
+Optimized version
+iter eval log-likelihood training accuracy heldout accuracy
+==================================================================
+0 1-3.526361E+00 0.008% N/A
+0 1-3.387460E+00 40.380% N/A
+1 3-2.907289E+00 40.380% N/A
+2 4-2.266155E+00 44.352% N/A
+3 5-2.112264E+00 47.233% N/A
+4 6-1.946646E+00 51.902% N/A
+5 7-1.832639E+00 52.944% N/A
+6 8-1.718746E+00 53.109% N/A
+7 9-1.612014E+00 56.934% N/A
+8 10-1.467009E+00 62.744% N/A
+9 11-1.346299E+00 65.729% N/A
+10 12-1.265980E+00 67.696% N/A
+11 13-1.203896E+00 69.463% N/A
+12 14-1.150394E+00 71.434% N/A
+13 15-1.081878E+00 71.901% N/A
+14 16-1.069843E+00 70.638% N/A
+15 17-9.904556E-01 76.113% N/A
+Maximum numbers of 15 iterations reached in 183.195 seconds
+Highest log-likelihood: -9.904556E-01
+```
+
+&emsp;&emsp;训练完成之后，将模型保存到文件
+```python
+m.save("tagger")
+```
+
+#### 4.6.4 使用tagger模型
+&emsp;&emsp;当前的词性标注系统，是严格按照[Ratnaparkhi, 1998]论文中43也的描述来实现的，代码在```example/postagger```文件夹中。
+
+&emsp;&emsp;当使用WSJ语料库00-18小节来进行训练，使用19-24小节进行测试时，得到的在已知词上准确率为97.31%，
+在未知词上准确率为87.39%。整体句准确率为57.95%，整体的词准确率为96.64%。
+
+&emsp;&emsp;训练tagger模型主要的可执行脚本是```postrainer.py```:
+
+```
+usage:postrainer.py [options] model
+
+options:
+-h, --help          show this help message and exit
+-fFILE, --file=FILE train a ME model with data from FILE
+--heldout=FILE      use heldout events from FILE
+--events_out=EVENTS_OUT write training(heldout) events to file
+-mMETHOD, --method=METHOD select training method [lbfgs,gis] [default=lbfgs]
+-cCUTOFF, --cutoff=CUTOFF discard feature with frequency < CUTOFF when training[default=10]
+-rRARE, --rare=RARE use special feature for rare word with frequency < RARE[default=5]
+-gGAUSSIAN, --gaussian=GAUSSIAN apply Gaussian penality when training[default=0.0]
+-b, --binary          save events in binary format for fast loading[default=off]
+--ev_cutoff=EV_CUTOFF discard event with frequency < CUTOFF when training[default=1]
+--iters=ITERS         how many iterations are required for training[default=15]
+--fast                use psyco to speed up training if possible
+-TTYPE, --type=TYPE   choose context type [default for English]
+```
+
+&emsp;&emsp;通过下面的指令，可以训练00-18小节的WFJ语料库（在文件00_18.sent中，每个句子一行），
+迭代100个循环，采用LBFGS算法。高斯系数是0.8，同时将模型保存到"wsj"文件中。
+
+```
+./postrainer.py -f 00_18.sent --iters 100 -g 0.8 wsg
+```
+&emsp;&emsp;训练过程中相应的屏幕输出是：
+
+```
+First pass: gather word frequency information
+1000 lines
+2000 lines
+3000 lines
+4000 lines
+. . .
+51000 lines
+44520 words found in training data
+Saving word frequence information to 00_18.sent.wordfreq
+Second pass: gather features and tag dict to be used in tagger
+feature cutoff:10
+rare word freq:5
+1000 lines
+2000 lines
+3000 lines
+4000 lines
+. . .
+51000 lines
+675386 features found
+12092 words found in pos dict
+Applying cutoff 10 to features
+66519 features remained after cutoff
+saving features to file wsj.features
+Saving tag dict object to wsj.tagdict done
+Third pass:training ME model...
+1000 lines
+2000 lines
+3000 lines
+4000 lines
+. . .
+51000 lines
+Total 969825 training events added
+Total 0 heldout events added
+Reducing events (cutoff is 1)...
+Reduced to 783427 training events
+Starting L-BFGS iterations...
+Number of Predicates: 28653
+Number of Outcomes: 45
+Number of Parameters: 66519
+Number of Corrections: 5
+Tolerance: 1.000000E-05
+Gaussian Penalty: on
+Optimized version
+iter eval loglikelihood training accuracy heldout accuracy
+==================================================================
+0 1-3.806662E+00 0.005% N/A
+0 1-3.636210E+00 47.771% N/A
+1 3-3.015621E+00 47.771% N/A
+2 4-2.326449E+00 50.274% N/A
+3 5-1.750152E+00 56.182% N/A
+4 6-1.497112E+00 61.177% N/A
+5 7-1.373379E+00 64.895% N/A
+. . .
+94 96-1.990776E-01 97.584% N/A
+95 97-1.984520E-01 97.602% N/A
+96 98-1.976996E-01 97.612% N/A
+97 99-1.968460E-01 97.665% N/A
+98 100-1.961286E-01 97.675% N/A
+99 101-1.951691E-01 97.704% N/A
+100 102-1.946537E-01 97.689% N/A
+Maximum numbers of 100 iterations reached in 3817.37 seconds
+Highest loglikehood: -1.946537E-01
+training finished
+saving tagger model to wsj done
+```
+
+&emsp;&emsp;工具包中提供了```maxent_tagger.py```脚本，使用前面训练得到的tagger模型，来对新句子进行标注。
+
+```
+usage: maxent_tagger.py [options] -m model file
+options:
+-h, --help      show this help message and exit
+-oOUTPUT, --output=OUTPUT
+                write tagged result to OUTPUT
+-mMODEL, --model=MODEL
+                load trained model from MODEL
+-t, --test      test mode, include original tag in output
+-v, --verbose
+-q, --quiet
+-TTYPE, --type=TYPE choose context type
+```
+
+&emsp;&emsp;标注就诶过会打印到屏幕上，每个句子一行。
+
+
 
 
 
