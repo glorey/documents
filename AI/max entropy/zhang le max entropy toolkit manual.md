@@ -659,7 +659,7 @@ $$
 $$
 f(x,y)=
 \begin{cases}
-1& \quad \text{if } y=VBG \text{ and } current\_suffix\_is_\ing(x)=true\\\\
+1& \quad \text{if } y=VBG \text{ and } current\\_suffix\\_is_\\ing(x)=true\\\\
 0& \quad \text{otherwise}\\\\
 \end{cases}
 $$
