@@ -336,6 +336,308 @@ GIS(Generalized Iterative Scaling)[Darroch and Ratcliff, 1972]和IIS(Improved It
 比IIS和GIS算法都要好。[Wallach, 2002]在CRF模型参数估计中报告了类似的结果。
 
 
+## 第四章 教程
+
+&emsp;&emsp;本章教程的目的是双重的。首先，本节提供了使用本工具包构建和使用条件最大熵模型的基本步骤。
+其次，它证明了最大熵技术在英文词性标注中的强大能力。
+
+### 4.1 特征表示
+&emsp;&emsp;按照[Ratnaparkhi, 1998]的描述，条件最大熵模型特征的数学表示可以写为以下形式：
+
+$$
+f_{cp,y'}(x,y)=
+\begin{cases}
+1& \quad \text{if } y=y' \text{ and } cp(x)=true\\\\
+0& \quad \text{otherwise}\\\\
+\end{cases}
+$$
+
+&emsp;&emsp;此处cp是上下文谓词，它将一个上下文x和输出y组成的pair映射到布尔变量{true, false}。
+
+&emsp;&emsp;我们可以选择任意的特征，来尽可能真实地反映问题的特性。
+可以自由的组合不同的任务相关知识作为特征函数，使得最大熵模型相对于其他的统计模型有明显优势。
+他们很多都需要强烈的特征独立假设（例如naive bayes分类器）。
+
+&emsp;&emsp;例如，词性标注任务，是一个对句子中的词进行添加词性标签的过程，下面的特征可能是非常有用：
+
+$$
+f_{previous\\_tag\\_is\\_DETEMINER,NOUN}(x,y)=
+\begin{cases}
+1& \quad \text{if } y=NOUN \text{ and previous tag is } DETERMINER(x)=true\\\\
+0& \quad \text{otherwise}\\\\
+\end{cases}
+$$
+
+&emsp;&emsp;当先一个词性是DETERMINER当前词性是NOUN时，特征激活。
+此特征在文字上可以写为"tag-1=DETERMINER_NOUN"。你可以在Case Study小节看到更多具体的例子。
+
+### 4.2 创建一个最大熵模型实例
+&emsp;&emsp;一个最大熵模型实例可以通过调用其构造函数来创建。
+
+&emsp;&emsp;在C++中
+
+```csharp
+#include <maxent/maxentmodel.hpp>
+using namespace maxent;
+MaxentModel m;
+```
+
+&emsp;&emsp;这样会创建一个```MaxentModel```类的实例称作```m```。需要注意所有的类和函数都在命名空间
+```maxent```中。为了阐述方便，include和using声明后续教程中会故意省略掉。
+
+&emsp;&emsp;在Python中
+
+```python
+from maxent import MaxentModel
+m = MaxentModel()
+```
+
+&emsp;&emsp;第一个声明中```import```从maxent模块中引入类MaxentModel到当前作用域中。
+第二个生命创建一个```MaxentModel```类的实例。
+
+### 4.3 在模型中增加事件
+
+&emsp;&emsp;通常来说，训练数据包括一个事件集合。每个事件包含上下文，输出，以及count表明此事件在训练数据中出现的次数。
+
+&emsp;&emsp;上下文是一个context predicate的组，因此一个事件会包含以下格式
+
+$$
+[(predicate_{1}, predicate_{2},...,predicate_{n}), outcome, count]
+$$
+
+&emsp;&emsp;假定我们要增加下面的事件到我们的模型中。
+
+$$
+[(predicate_{1}, predicate_{2},...,predicate_{n}), outcome_{1}, 1]
+$$
+
+&emsp;&emsp;我们需要首席创建一个context。
+
+&emsp;&emsp;在C++中
+
+```csharp
+std::vector<std::string> context
+context.append(“predicate1”);
+context.append(“predicate2”);
+context.append(“predicate3”);
+. . .
+```
+
+&emsp;&emsp;在Python中：
+
+```python
+context = [’predicate1’, ’predicate2’, ’predicate3’]
+```
+
+&emsp;&emsp;在增加事件之前，我们必须首先调用begin_add_event()来同时模型来开始训练。
+
+&emsp;&emsp;在C++中
+
+```csharp
+m.begin_add_event();
+```
+
+&emsp;&emsp;在Python中：
+
+```python
+m.begin_add_event()
+```
+
+&emsp;&emsp;现在我们开始增加事件。
+
+&emsp;&emsp;在C++中
+
+```csharp
+m.add_event(context, "outcome1", 1);
+```
+
+&emsp;&emsp;在Python中
+
+```python
+m.add_event(context, "outcome1", 1)
+```
+
+&emsp;&emsp;可以在创建context的时候指定特征值（必须为非负）。
+
+&emsp;&emsp;在C++中
+
+```csharp
+std::vector<pair<std::string, float> > context
+context.append(make_pair(“predicate1”, 2.0));
+context.append(make_pair(“predicate2”, 3.0));
+context.append(make_pair(“predicate3”, 4.0));
+. . .
+```
+
+&emsp;&emsp;在python中
+
+```python
+context = [(’predicate1’, 2.0), (’predicate2’, 3.0), (’predicate3’, 4.0)]
+```
+
+&emsp;&emsp;为了描述方便，我们仅介绍输出为二元的case（这也是最常见的）。
+你可以在API小节看到指定输出为实数特征的更多信息。
+
+
+&emsp;&emsp;```add_event()```函数的第三个参数是事件的count，如果count是1可以忽略。
+我们可以重复调用```add_event()```函数，直到所有的事件都添加到模型中。
+
+&emsp;&emsp;当添加最后的事件之后，需要调用```end_add_event()```函数。
+来通知模型添加事件结束。
+
+&emsp;&emsp;在C++中。
+
+```csharp
+m.end_add_event();
+```
+
+&emsp;&emsp;在Python中。
+
+```python
+m.end_add_event();
+```
+&emsp;&emsp;在API小节会讨论```end_add_event()```的附件参数。
+
+### 4.4 训练模型
+
+&emsp;&emsp;训练最大熵模型比较简单，下面是一些示例：
+
+```csharp
+m.train(); // train the model with default training method
+m.train(30, "lbfgs"); // train the model with 30 iterations of L-BFGS method
+m.train(100, "gis", 2); // train the model with 100 iterations of GIS method and apply Gaussian Prior smoothing with a global variance of 2
+m.train(30, "lbfgs", 2, 1E-03); // set terminate tolerance to 1E-03
+```
+
+&emsp;&emsp;训练方法可以是```gis```或者```lbfgs```(默认)。高斯先验$\sigma^{2}$用来对通过寻找最大后验解决方案时来正则化模型。
+
+&emsp;&emsp;如果```m.verbose```设置为1（默认为0）。训练过程会打印到标准输出流，你可以在屏幕上看到类似这样的输出。
+
+```
+Total 125997 training events added
+Total 0 heldout events added
+Reducing events (cutoff is 1)...
+Reduced to 65232 training events
+Starting L-BFGS iterations...
+Number of Predicates: 5827
+Number of Outcomes: 34
+Number of Parameters: 8202
+Number of Corrections: 5
+Tolerance: 1.000000E-05
+Gaussian Penalty: on
+Optimized version
+iter eval log-likelihood training accuracy heldout accuracy
+==================================================================
+0 1-3.526361E+00 0.008% N/A
+0 1-3.387460E+00 40.380% N/A
+1 3-2.907289E+00 40.380% N/A
+2 4-2.266155E+00 44.352% N/A
+3 5-2.112264E+00 47.233% N/A
+4 6-1.946646E+00 51.902% N/A
+5 7-1.832639E+00 52.944% N/A
+6 8-1.718746E+00 53.109% N/A
+7 9-1.612014E+00 56.934% N/A
+8 10-1.467009E+00 62.744% N/A
+9 11-1.346299E+00 65.729% N/A
+10 12-1.265980E+00 67.696% N/A
+11 13-1.203896E+00 69.463% N/A
+12 14-1.150394E+00 71.434% N/A
+13 15-1.081878E+00 71.901% N/A
+14 16-1.069843E+00 70.638% N/A
+15 17-9.904556E-01 76.113% N/A
+Maximum numbers of 15 iterations reached in 183.195 seconds
+Highest log-likelihood: -9.904556E-01
+```
+
+&emsp;&emsp;你可以保存一个训练好的模型到文件中，后续进行加载。在C++以及Python中都采用如下调用：
+
+```csharp
+m.save("new_model");
+m.load("new_model");
+```
+
+&emsp;&emsp;一个命名为```new_model```的文件会被创建，这个模型中包含上下文，输出的定义，特征到特征id的映射，
+以及优化后每个特征的参数权重。
+
+&emsp;&emsp;如果可选参数```binary```被设置为```true```，此程序库会在支持```zlib```下进行编译，
+会将模型保存为压缩的二进制格式，这样模型文件会更小，而且存储加载速度都更快。模型文件的格式会在加载时自动检测。
+
+```csharp
+m.save("new_model", true); //save a (compressed) binary model
+m.load("new_model"); //load it from disk
+```
+
+### 4.5 使用模型
+
+&emsp;&emsp;模型的使用很直接。通过```eval()```函数可以返回$p(y|x)$的概率。在C++下
+
+```csharp
+m.eval(context, outcome);
+```
+
+&emsp;&emsp;在给定上下文之后，如果要得到完整的概率分布，```eval_all()```函数非常有用。
+在C++下
+
+```csharp
+std::vector<pair<std::string, double> > probs;
+m.eval_all(context, probs);
+```
+
+&emsp;&emsp;会将输出概率分布保存到向量```probs```数组中。probs中的元素是一个输出和其对应概率值的pair。
+如果第三个参数```sort_resultt```设置为```true```(默认)，```eval_all()```会自动对输出分布以降序进行排序。
+第一个元素包含分布中的最高概率。
+
+&emsp;&emsp;Python接口有两个稍微不同的```eval()```方法，第一个```eval()```会返回给定上下文最可能的类标签。
+
+```python
+label = m.eval(context)
+```
+
+&emsp;&emsp;第二个是```eval_all()```，会返回全部的条件分布，返回形式是一个(label, probability)对的list。
+
+```python
+result = m.eval_all(context)
+```
+
+&emsp;&emsp;可以查看API reference，来查看每个类和函数更详细的解释。
+
+### 4.6 Case Study: 构建一个最大熵词性标注工具
+
+&emsp;&emsp;本小节详细讨论构建一个英文词性标注的步骤。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
